@@ -1,0 +1,30 @@
+#!/bin/bash
+
+_highlander()
+{
+    declare -A SUBCOMMANDS
+    declare -A OPTS
+    OPTS["maccleod-create"]="-h --help -f --format -c --column --max-width --variable --prefix"
+    OPTS["maccleod-delete"]="-h --help"
+    OPTS["maccleod-get"]="-h --help -f --format -c --column --max-width --variable --prefix"
+    OPTS["maccleod-get-definition"]="-h --help"
+    OPTS["maccleod-list"]="-h --help -f --format -c --column --max-width --quote"
+    OPTS["maccleod-update"]="-h --help -f --format -c --column --max-width --variable --prefix"
+    OPTS["maccleod-validate"]="-h --help -f --format -c --column --max-width --prefix"
+    
+    COMMANDS="${!OPTS[*]}"
+    COMPREPLY=()
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if [[ $cur =~ (\.|\~|\/).* ]] ; then
+        _filedir
+    elif [ $COMP_CWORD == "1" ] ; then
+        COMPREPLY=($(compgen -W "$COMMANDS" -- ${cur}))
+    elif [ $COMP_CWORD == "2" ] ; then
+        COMPREPLY=($(compgen -W "${OPTS[${prev}]}" -- ${cur}))
+    fi
+    return 0
+}
+complete -F _highlander highlander
